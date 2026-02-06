@@ -2,66 +2,69 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>AI Design System Prompt Kit</title>
+    <title>LM 슬라이드, 인포그래픽 프롬프트 선택</title>
     <style>
+        /* NotebookLM 스타일의 베이지 배경 및 기본 설정 */
         body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #F9F8F3; margin: 0; padding: 40px 20px; color: #202124; }
-        .container { max-width: 1100px; margin: 0 auto; } 
+        .container { max-width: 1000px; margin: 0 auto; } 
         
+        /* 타이틀 및 안내 섹션 */
         .header-section { text-align: center; margin-bottom: 40px; }
-        .header-section h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px; }
-        .header-section p { font-size: 1rem; color: #5f6368; line-height: 1.6; }
+        .header-section h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
+        /* 타이틀보다 약 4pt 작고 그레이 색상인 안내 문구 */
+        .header-section p { font-size: calc(1.8rem - 4pt); color: #70757a; margin: 0; }
         
         .gallery {
             display: grid;
-            /* 카드 최소 너비를 200px에서 180px로 약 10% 감소 */
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-            gap: 20px;
+            /* 가로 크기를 기존 180px에서 약 10% 더 줄인 162px로 설정 */
+            grid-template-columns: repeat(auto-fill, minmax(162px, 1fr)); 
+            gap: 16px;
         }
 
         .card {
             background: white;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             cursor: pointer;
             border: 2px solid transparent;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s ease;
             position: relative;
         }
 
-        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
         .card.selected { border-color: #4285F4; background-color: #F8FBFF; }
 
         .card img { 
             width: 100%; 
-            /* 이미지 높이를 150px에서 135px로 10% 감소 */
-            height: 135px; 
+            /* 가로 세로 비율 유지를 위해 높이도 소폭 조정 */
+            height: 125px; 
             object-fit: cover; 
             display: block; 
             background: #f1f3f4;
         }
 
-        .card-info { padding: 14px; text-align: center; background: white; }
-        .card-info h3 { margin: 0; font-size: 0.9rem; font-weight: 600; color: #3c4043; }
+        .card-info { padding: 12px; text-align: center; background: white; border-top: 1px solid #f1f3f4; }
+        .card-info h3 { margin: 0; font-size: 0.85rem; font-weight: 600; color: #3c4043; }
 
-        /* 토스트 메시지 및 기타 스크립트는 이전과 동일 */
         #toast {
-            visibility: hidden; min-width: 250px; background-color: #323336; color: #fff;
-            text-align: center; border-radius: 8px; padding: 14px;
-            position: fixed; z-index: 100; left: 50%; bottom: 50px; transform: translateX(-50%);
-            font-size: 0.9rem; font-weight: 500;
+            visibility: hidden; min-width: 220px; background-color: #323336; color: #fff;
+            text-align: center; border-radius: 8px; padding: 12px;
+            position: fixed; z-index: 100; left: 50%; bottom: 40px; transform: translateX(-50%);
+            font-size: 0.85rem;
         }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {bottom: 20px; opacity: 0;} to {bottom: 50px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 50px; opacity: 1;} to {bottom: 20px; opacity: 0;} }
+
+        @keyframes fadein { from {bottom: 20px; opacity: 0;} to {bottom: 40px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 40px; opacity: 1;} to {bottom: 20px; opacity: 0;} }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header-section">
-        <h1>🎨 AI Design System Prompt Kit</h1>
-        <p>원하는 디자인 스타일 카드를 선택하세요.<br>클릭 시 생성형 AI를 위한 <strong>최적화된 프롬프트</strong>가 자동으로 복사됩니다.</p>
+        <h1>LM 슬라이드, 인포그래픽 프롬프트 선택</h1>
+        <p>(적용하려는 스타일카드를 선택하면, 프롬프트가 자동 복사됨)</p>
     </div>
     <div id="gallery" class="gallery"></div>
 </div>
@@ -77,7 +80,7 @@
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
-            <img src="./${item.img}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/200x150/f1f3f4/999?text=Image+Ready'">
+            <img src="./${item.img}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/160x120/f1f3f4/999?text=No+Image'">
             <div class="card-info"><h3>${item.title}</h3></div>
         `;
         
