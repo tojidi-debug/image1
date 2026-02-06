@@ -5,68 +5,64 @@
     <title>Design Prompt Selector</title>
     <style>
         body { font-family: 'Pretendard', sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; } /* 가로폭 확장 */
-        h1 { text-align: center; font-size: 1.3rem; margin-bottom: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; } 
+        h1 { text-align: center; font-size: 1.3rem; margin-bottom: 20px; color: #333; }
         
         .gallery {
             display: grid;
-            /* 카드 크기를 키우기 위해 minmax 값 조정 */
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 20px;
         }
 
         .card {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             cursor: pointer;
-            border: 2px solid transparent;
-            transition: 0.2s;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
             position: relative;
         }
 
-        .card:hover { transform: translateY(-3px); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
         .card.selected { border-color: #007bff; background-color: #f0f7ff; }
 
-        /* 이미지 영역 설정 */
         .card img { 
             width: 100%; 
-            height: 120px; 
+            height: 140px; 
             object-fit: cover; 
             display: block; 
-            background: #eee;
-            color: transparent; /* 대체 텍스트 숨김 처리 (그림 안나올때) */
+            background: #f8f9fa;
         }
 
-        /* 이미지가 없을 때 나타나는 텍스트 스타일 수정 */
         .card::before {
             content: attr(data-title);
             position: absolute;
-            top: 40px;
+            top: 60px;
             left: 0;
             width: 100%;
             text-align: center;
-            font-size: 8pt; /* 4pt 줄임 (기존 약 12pt -> 8pt) */
-            color: #999;
+            font-size: 0.8rem;
+            color: #ccc;
             z-index: 0;
-            padding: 0 5px;
+            padding: 0 10px;
             box-sizing: border-box;
         }
 
-        .card-info { padding: 10px; text-align: center; position: relative; z-index: 1; background: white; }
-        .card-info h3 { margin: 0; font-size: 0.85rem; font-weight: 600; }
+        .card-info { padding: 12px; text-align: center; position: relative; z-index: 1; background: white; border-top: 1px solid #eee; }
+        .card-info h3 { margin: 0; font-size: 0.9rem; font-weight: 600; color: #444; }
 
         #toast {
-            visibility: hidden; min-width: 180px; background-color: #333; color: #fff;
-            text-align: center; border-radius: 20px; padding: 10px;
-            position: fixed; z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%);
-            font-size: 0.8rem;
+            visibility: hidden; min-width: 200px; background-color: #333; color: #fff;
+            text-align: center; border-radius: 25px; padding: 12px;
+            position: fixed; z-index: 100; left: 50%; bottom: 40px; transform: translateX(-50%);
+            font-size: 0.85rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
 
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 40px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 40px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
 <body>
@@ -76,7 +72,7 @@
     <div id="gallery" class="gallery"></div>
 </div>
 
-<div id="toast">✅ 복사되었습니다!</div>
+<div id="toast">✅ 프롬프트가 복사되었습니다!</div>
 
 <script src="data.js"></script>
 <script>
@@ -86,11 +82,10 @@
     designData.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.setAttribute('data-title', item.title); // 대체 텍스트용 데이터
+        card.setAttribute('data-title', item.title);
         
-        // 이미지 경로를 현재 저장소 위치(./파일명)로 강제 지정
         card.innerHTML = `
-            <img src="./${item.img}" alt="" loading="lazy">
+            <img src="./${item.img}" alt="${item.title}" onerror="this.style.display='none'" loading="lazy">
             <div class="card-info"><h3>${item.title}</h3></div>
         `;
         
@@ -103,6 +98,8 @@
                 const toast = document.getElementById("toast");
                 toast.className = "show";
                 setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+            }).catch(err => {
+                console.error('클립보드 복사 실패:', err);
             });
         };
         gallery.appendChild(card);
