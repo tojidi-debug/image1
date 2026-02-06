@@ -34,5 +34,23 @@ const designData = [
         title: "카카오 스타일",
         img: "kakao.jpg",
         prompt: `카카오캐릭터를 활용하여 귀엽되 가독성이 높음`
+    },
+    {
+        id: 7,
+        title: "Nature Organic 스타일",
+        img: "nature_organic.jpg",
+        prompt: `전체 디자인 설정:\n톤: "자연스럽고 유기적인, 정돈된, 차분한 전문성."\n시각적 아이덴티티:\n배경: "연한 그레이 격자(Check) 패턴이 미세하게 들어간 화이트 배경."\n강조 색상: "포레스트 그린, 세이지 그린, 소프트 민트, 종이 질감 레이어."`
+    },
+    {
+        id: 8,
+        title: "Simple Beige 스타일",
+        img: "simple_beige.jpg",
+        prompt: `전체 디자인 설정:\n톤: "현대적 미니멀리즘, 체계적, 따뜻한 신뢰감."\n시각적 아이덴티티:\n배경색: "#F5F5DC (연한 베이지) 솔리드 컬러."\n텍스트/선: "다크 차콜 또는 짙은 브라운."\n이미지 스타일: "수학적인 그리드 시스템, 정교한 사각형 레이아웃, 투명도가 적용된 카드 UI."`
+    },
+    {
+        id: 9,
+        title: "LM Simple 스타일",
+        img: "LM_simple.jpg",
+        prompt: `전체 디자인 설정:\n톤: "현대적이고(Modern), 정갈하며(Clean), 정보를 효과적으로 전달하는(Informational) 전문성."\n시각적 아이덴티티:\n배경: "깨끗한 미색(Off-white) 또는 아주 연한 베이지색 단색 배경."\n레이아웃: "부드러운 곡선(Rounded corners)과 은은한 그림자(Soft drop shadows)가 적용된 화이트 카드 시스템."\n강조 색상: "신뢰감을 주는 블루(#007BFF), 차분한 오렌지, 소프트 레드 포인트."`
     }
 ];
