@@ -23,22 +23,22 @@
             opacity: 0.5; pointer-events: none; z-index: 0;
         }
 
-        /* 2. 중앙 베이지색 메인 보드 (하단 여유 공간 180px 확보) */
+        /* 2. 중앙 베이지색 메인 보드 (하단 여유 공간 대폭 확보) */
         .container {
             position: relative;
             max-width: 920px;
             margin: 60px auto 100px;
             background-color: #F9F8F3; /* NotebookLM 베이지 */
-            padding: 50px 25px 180px; /* 아래쪽 패딩을 더 넓게 설정 */
+            padding: 50px 25px 250px; /* 하단 패딩을 250px로 늘려 넉넉한 여유 행 확보 */
             border-radius: 32px;
             box-shadow: 0 30px 100px rgba(0,0,0,0.7);
             z-index: 10;
         }
 
-        /* 3. 타이틀 섹션 (로고 제거) */
-        .header-section { text-align: center; margin-bottom: 40px; }
+        /* 3. 타이틀 섹션 (글자 크기 보정본) */
+        .header-section { text-align: center; margin-bottom: 45px; }
         .header-section h1 { 
-            font-size: 1.6rem; 
+            font-size: 1.55rem; 
             font-weight: 800; color: #202124; margin-bottom: 12px; letter-spacing: -0.5px;
         }
         .header-section p { 
@@ -46,11 +46,11 @@
             color: #70757a; margin: 0; font-weight: 500;
         }
 
-        /* 4. 이미지 갤러리 (한 행 최대 5개 유지) */
+        /* 4. 이미지 갤러리 (한 행 최대 5개) */
         .gallery {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
+            gap: 15px;
         }
 
         .card {
@@ -74,72 +74,5 @@
             background: #f1f3f4;
         }
 
-        .card-info { padding: 10px 5px; text-align: center; background: white; border-top: 1px solid #f1f3f4; }
-        .card-info h3 { margin: 0; font-size: 0.75rem; font-weight: 600; color: #3c4043; line-height: 1.3; }
-
-        /* 복사 알림 (Toast) */
-        #toast {
-            visibility: hidden; min-width: 250px; background-color: #323336; color: #fff;
-            text-align: center; border-radius: 8px; padding: 14px;
-            position: fixed; z-index: 100; left: 50%; bottom: 60px; transform: translateX(-50%);
-            font-size: 0.9rem;
-        }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-
-        @keyframes fadein { from {bottom: 30px; opacity: 0;} to {bottom: 60px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 60px; opacity: 1;} to {bottom: 30px; opacity: 0;} }
-    </style>
-</head>
-<body>
-
-<div class="space-overlay"></div>
-
-<div class="container">
-    <div class="header-section">
-        <h1>LM 슬라이드, 인포그래픽 프롬프트 선택</h1>
-        <p>(적용하려는 스타일카드를 선택하면, 프롬프트가 자동 복사됨)</p>
-    </div>
-    
-    <div id="gallery" class="gallery">
-        <p id="loading-msg" style="grid-column: span 5; text-align: center; color: #999; padding: 50px;">데이터를 불러오고 있습니다...</p>
-    </div>
-</div>
-
-<div id="toast">📋 프롬프트가 클립보드에 복사되었습니다.</div>
-
-<script src="data.js"></script>
-<script>
-    // 페이지가 로드되자마자 즉시 실행되는 함수
-    window.onload = function() {
-        const gallery = document.getElementById('gallery');
-        const loadingMsg = document.getElementById('loading-msg');
-        let lastSelected = null;
-
-        // designData가 존재하는지 확인
-        if (typeof designData !== 'undefined' && designData.length > 0) {
-            gallery.innerHTML = ''; // 로딩 메시지 제거
-            
-            designData.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <img src="./${item.img}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/150x100/f1f3f4/999?text=Image'">
-                    <div class="card-info"><h3>${item.title}</h3></div>
-                `;
-                
-                card.onclick = () => {
-                    if (lastSelected) lastSelected.classList.remove('selected');
-                    card.classList.add('selected');
-                    lastSelected = card;
-
-                    // 복사 기능
-                    if (navigator.clipboard) {
-                        navigator.clipboard.writeText(item.prompt).then(() => {
-                            showToast();
-                        });
-                    } else {
-                        // 구형 브라우저 대응
-                        const t = document.createElement("textarea");
-                        t.value = item.prompt; document.body.appendChild(t);
-                        t.select(); document.execCommand('copy');
-                        document.body.
+        .card-info { padding: 12px 5px; text-align: center; background: white; border-top: 1px solid #f1f3f4; }
+        .card-info h3 { margin: 0; font-size: 0.78rem; font-weight: 600; color: #3c40
