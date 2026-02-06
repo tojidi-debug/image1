@@ -4,137 +4,46 @@
     <meta charset="UTF-8">
     <title>LM 슬라이드, 인포그래픽 프롬프트 선택</title>
     <style>
-        /* 1. 우주 배경 스타일 (참고 사이트 스타일 이식) */
+        /* 1. 우주 배경 (참고 페이지 스타일 반영) */
         body, html {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
+            width: 100%; height: 100%; margin: 0; padding: 0;
             font-family: 'Pretendard', -apple-system, sans-serif;
             background: radial-gradient(ellipse at top, #1a237e 0%, #0a0e27 50%),
                         radial-gradient(ellipse at bottom, #0d1b3e 0%, #000000 100%);
             background-attachment: fixed;
-            overflow-x: hidden;
+            overflow-y: auto;
         }
 
-        /* 별 효과 */
         .space-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(2px 2px at 20% 30%, white, transparent),
                         radial-gradient(2px 2px at 60% 70%, white, transparent),
                         radial-gradient(1px 1px at 50% 50%, white, transparent);
             background-size: 200% 200%;
-            opacity: 0.4;
-            pointer-events: none;
-            z-index: 0;
+            opacity: 0.5; pointer-events: none; z-index: 0;
         }
 
-        /* 2. 중앙 베이지 콘텐츠 보드 */
+        /* 2. 베이지색 메인 보드 컨테이너 */
         .container {
             position: relative;
-            max-width: 950px; /* 5개 배열을 위한 최적 너비 */
-            margin: 50px auto;
-            background-color: #F9F8F3; /* LM 베이지색 */
-            padding: 40px 30px;
+            max-width: 900px; /* 5열 배치를 위해 최적화된 너비 */
+            margin: 60px auto;
+            background-color: #F9F8F3; /* 요청하신 베이지색 배경 */
+            padding: 40px 20px;
             border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 80px rgba(0,0,0,0.6);
             z-index: 1;
         }
 
-        /* 3. 타이틀 및 안내 문구 (크기 조정: 30% 축소 후 +3pt) */
-        .header-section { text-align: center; margin-bottom: 35px; }
+        /* 3. 타이틀 및 안내문구 (크기 보정: 축소본 + 3pt) */
+        .header-section { text-align: center; margin-bottom: 40px; }
         .header-section h1 { 
-            /* 기존 약 28px -> 30% 축소(20px) -> 3pt 추가 = 약 24px */
-            font-size: 1.5rem; 
-            font-weight: 800; 
-            color: #202124;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
+            font-size: 1.55rem; /* 타이틀 크기 조정 */
+            font-weight: 800; color: #202124; margin-bottom: 8px; letter-spacing: -0.5px;
         }
         .header-section p { 
-            /* 기존 약 16px -> 30% 축소(11px) -> 3pt 추가 = 약 15px */
-            font-size: 0.95rem; 
-            color: #5f6368; 
-            margin: 0;
-            font-weight: 500;
+            font-size: 0.95rem; /* 안내문구 크기 및 그레이 색상 */
+            color: #70757a; margin: 0; font-weight: 500;
         }
 
-        /* 4. 갤러리 그리드 (한 행에 최대 5개) */
-        .gallery {
-            display: grid;
-            /* 가로 길이를 약 10% 추가 감소하여 5개 배치 유도 */
-            grid-template-columns: repeat(5, 1fr); 
-            gap: 15px;
-        }
-
-        /* 카드 스타일 */
-        .card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .card.selected { border-color: #4285F4; background-color: #F8FBFF; }
-
-        /* 이미지 크기 조정 */
-        .card img { 
-            width: 100%; 
-            height: 105px; /* 가로가 줄어듦에 따라 높이도 비율에 맞춰 축소 */
-            object-fit: cover; 
-            display: block; 
-            background: #f1f3f4;
-        }
-
-        .card-info { padding: 10px; text-align: center; background: white; border-top: 1px solid #f1f3f4; }
-        .card-info h3 { margin: 0; font-size: 0.75rem; font-weight: 600; color: #3c4043; line-height: 1.3; }
-
-        /* 복사 알림창 (Toast) */
-        #toast {
-            visibility: hidden; min-width: 220px; background-color: #323336; color: #fff;
-            text-align: center; border-radius: 8px; padding: 12px;
-            position: fixed; z-index: 100; left: 50%; bottom: 40px; transform: translateX(-50%);
-            font-size: 0.85rem;
-        }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-
-        @keyframes fadein { from {bottom: 20px; opacity: 0;} to {bottom: 40px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 40px; opacity: 1;} to {bottom: 20px; opacity: 0;} }
-
-        /* 모바일 대응 (화면이 작아지면 개수 조정) */
-        @media (max-width: 800px) {
-            .gallery { grid-template-columns: repeat(3, 1fr); }
-            .container { margin: 20px; padding: 20px; }
-        }
-    </style>
-</head>
-<body>
-
-<div class="space-overlay"></div>
-
-<div class="container">
-    <div class="header-section">
-        <h1>LM 슬라이드, 인포그래픽 프롬프트 선택</h1>
-        <p>(적용하려는 스타일카드를 선택하면, 프롬프트가 자동 복사됨)</p>
-    </div>
-    
-    <div id="gallery" class="gallery"></div>
-</div>
-
-<div id="toast">📋 프롬프트가 클립보드에 복사되었습니다.</div>
-
-<script src="data.js"></script>
-<script>
-    const gallery = document.getElementById('gallery');
-    let lastSelected = null;
-
-    designData.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-            <img src="./${item.img}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/150x100/f1f3f4/999?
+        /* 4
