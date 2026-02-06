@@ -2,48 +2,71 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Prompt Selector</title>
+    <title>Design Prompt Selector</title>
     <style>
         body { font-family: 'Pretendard', sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; }
-        h1 { text-align: center; font-size: 1.4rem; margin-bottom: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; } /* 가로폭 확장 */
+        h1 { text-align: center; font-size: 1.3rem; margin-bottom: 20px; }
         
-        /* 6개가 한눈에 들어오게 그리드 조정 */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
+            /* 카드 크기를 키우기 위해 minmax 값 조정 */
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+            gap: 15px;
         }
 
         .card {
             background: white;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
             cursor: pointer;
             border: 2px solid transparent;
             transition: 0.2s;
+            position: relative;
         }
 
         .card:hover { transform: translateY(-3px); }
-        .card.selected { border-color: #007bff; background-color: #e7f1ff; }
+        .card.selected { border-color: #007bff; background-color: #f0f7ff; }
 
-        /* 이미지 높이를 약 30% 수준으로 축소 */
-        .card img { width: 100%; height: 100px; object-fit: cover; display: block; background: #eee; }
+        /* 이미지 영역 설정 */
+        .card img { 
+            width: 100%; 
+            height: 120px; 
+            object-fit: cover; 
+            display: block; 
+            background: #eee;
+            color: transparent; /* 대체 텍스트 숨김 처리 (그림 안나올때) */
+        }
 
-        .card-info { padding: 8px; text-align: center; }
-        .card-info h3 { margin: 0; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* 이미지가 없을 때 나타나는 텍스트 스타일 수정 */
+        .card::before {
+            content: attr(data-title);
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 8pt; /* 4pt 줄임 (기존 약 12pt -> 8pt) */
+            color: #999;
+            z-index: 0;
+            padding: 0 5px;
+            box-sizing: border-box;
+        }
+
+        .card-info { padding: 10px; text-align: center; position: relative; z-index: 1; background: white; }
+        .card-info h3 { margin: 0; font-size: 0.85rem; font-weight: 600; }
 
         #toast {
             visibility: hidden; min-width: 180px; background-color: #333; color: #fff;
             text-align: center; border-radius: 20px; padding: 10px;
-            position: fixed; z-index: 100; left: 50%; bottom: 20px; transform: translateX(-50%);
+            position: fixed; z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%);
             font-size: 0.8rem;
         }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
 
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 20px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 20px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
 <body>
@@ -63,9 +86,11 @@
     designData.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card';
-        // 중요: 이미지 경로를 item.img 그대로 사용 (Root에 있으므로)
+        card.setAttribute('data-title', item.title); // 대체 텍스트용 데이터
+        
+        // 이미지 경로를 현재 저장소 위치(./파일명)로 강제 지정
         card.innerHTML = `
-            <img src="${item.img}" alt="${item.title}" loading="lazy">
+            <img src="./${item.img}" alt="" loading="lazy">
             <div class="card-info"><h3>${item.title}</h3></div>
         `;
         
