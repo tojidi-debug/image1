@@ -4,21 +4,29 @@
     <meta charset="UTF-8">
     <title>LM 슬라이드, 인포그래픽 프롬프트 선택</title>
     <style>
-        /* NotebookLM 스타일의 베이지 배경 및 기본 설정 */
-        body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #F9F8F3; margin: 0; padding: 40px 20px; color: #202124; }
+        /* NotebookLM 스타일의 베이지 배경 */
+        body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #F9F8F3; margin: 0; padding: 30px 20px; color: #202124; }
         .container { max-width: 1000px; margin: 0 auto; } 
         
-        /* 타이틀 및 안내 섹션 */
-        .header-section { text-align: center; margin-bottom: 40px; }
-        .header-section h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
-        /* 타이틀보다 약 4pt 작고 그레이 색상인 안내 문구 */
-        .header-section p { font-size: calc(1.8rem - 4pt); color: #70757a; margin: 0; }
+        /* 타이틀 및 안내 섹션: 크기 약 30% 축소 적용 */
+        .header-section { text-align: center; margin-bottom: 30px; }
+        .header-section h1 { 
+            font-size: 1.25rem; /* 기존 1.8rem에서 약 30% 축소 */
+            font-weight: 700; 
+            margin-bottom: 6px; 
+            letter-spacing: -0.5px; 
+        }
+        .header-section p { 
+            font-size: 0.85rem; /* 안내 문구도 함께 축소 */
+            color: #70757a; 
+            margin: 0; 
+        }
         
         .gallery {
             display: grid;
-            /* 가로 크기를 기존 180px에서 약 10% 더 줄인 162px로 설정 */
-            grid-template-columns: repeat(auto-fill, minmax(162px, 1fr)); 
-            gap: 16px;
+            /* 가로 크기를 기존 162px에서 약 10% 추가 감소한 145px로 설정 */
+            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); 
+            gap: 15px;
         }
 
         .card {
@@ -37,21 +45,21 @@
 
         .card img { 
             width: 100%; 
-            /* 가로 세로 비율 유지를 위해 높이도 소폭 조정 */
-            height: 125px; 
+            /* 가로가 줄어듦에 따라 비율을 맞추기 위해 높이도 115px로 조정 */
+            height: 115px; 
             object-fit: cover; 
             display: block; 
             background: #f1f3f4;
         }
 
-        .card-info { padding: 12px; text-align: center; background: white; border-top: 1px solid #f1f3f4; }
-        .card-info h3 { margin: 0; font-size: 0.85rem; font-weight: 600; color: #3c4043; }
+        .card-info { padding: 10px; text-align: center; background: white; border-top: 1px solid #f1f3f4; }
+        .card-info h3 { margin: 0; font-size: 0.8rem; font-weight: 600; color: #3c4043; }
 
         #toast {
-            visibility: hidden; min-width: 220px; background-color: #323336; color: #fff;
-            text-align: center; border-radius: 8px; padding: 12px;
+            visibility: hidden; min-width: 200px; background-color: #323336; color: #fff;
+            text-align: center; border-radius: 8px; padding: 10px 15px;
             position: fixed; z-index: 100; left: 50%; bottom: 40px; transform: translateX(-50%);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
 
@@ -80,7 +88,7 @@
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
-            <img src="./${item.img}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/160x120/f1f3f4/999?text=No+Image'">
+            <img src="./${item.img}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/145x115/f1f3f4/999?text=No+Image'">
             <div class="card-info"><h3>${item.title}</h3></div>
         `;
         
