@@ -4,18 +4,16 @@
     <meta charset="UTF-8">
     <title>LM 슬라이드, 인포그래픽 프롬프트 선택</title>
     <style>
-        /* 1. 전체 우주 배경 설정 */
+        /* 1. 우주 배경 설정 */
         body, html {
             width: 100%; height: 100%; margin: 0; padding: 0;
             font-family: 'Pretendard', -apple-system, sans-serif;
-            /* 참고하신 사이트의 어두운 우주 그라데이션 */
             background: radial-gradient(ellipse at top, #1a237e 0%, #0a0e27 50%),
                         radial-gradient(ellipse at bottom, #0d1b3e 0%, #000000 100%);
             background-attachment: fixed;
             overflow-y: auto;
         }
 
-        /* 움직이는 별 효과 레이어 */
         .space-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(2px 2px at 20% 30%, white, transparent),
@@ -25,72 +23,88 @@
             opacity: 0.5; pointer-events: none; z-index: 0;
         }
 
-        /* 2. 중앙 베이지색 콘텐츠 보드 (구분감 있게 배치) */
+        /* 2. 베이지색 메인 보드 (하단 padding 대폭 강화) */
         .container {
             position: relative;
-            max-width: 900px; /* 5개 배열을 위한 최적 너비 */
-            margin: 60px auto;
-            background-color: #F9F8F3; /* 요청하신 LM 베이지색 */
-            padding: 40px 20px;
-            border-radius: 24px;
-            box-shadow: 0 20px 80px rgba(0,0,0,0.6);
-            z-index: 10; /* 배경보다 위에 오도록 설정 */
+            max-width: 950px;
+            margin: 60px auto 100px; /* 하단 마진 추가 */
+            background-color: #F9F8F3;
+            padding: 50px 30px 120px; /* 하단 패딩(120px)으로 충분한 빈 칸 확보 */
+            border-radius: 32px;
+            box-shadow: 0 30px 100px rgba(0,0,0,0.7);
+            z-index: 10;
         }
 
-        /* 3. 타이틀 및 안내문구 (축소본에서 3pt 키운 크기) */
-        .header-section { text-align: center; margin-bottom: 35px; }
-        .header-section h1 { 
-            font-size: 1.55rem; /* 타이틀 크기 최적화 */
-            font-weight: 800; color: #202124; margin-bottom: 8px; letter-spacing: -0.5px;
+        /* 3. 로고 + 타이틀 섹션 */
+        .header-section { text-align: center; margin-bottom: 45px; }
+        
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px; /* 로고와 글자 사이 간격 */
+            margin-bottom: 12px;
         }
+
+        /* NotebookLM 로고 이미지 스타일 */
+        .logo-img {
+            height: 1.6rem; /* 타이틀 h1 크기와 맞춤 */
+            width: auto;
+            display: block;
+        }
+
+        .header-section h1 { 
+            font-size: 1.6rem; 
+            font-weight: 800; color: #202124; margin: 0; letter-spacing: -0.5px;
+        }
+        
         .header-section p { 
-            font-size: 0.95rem; /* 안내문구: 타이틀보다 작고 그레이 톤 */
+            font-size: 0.98rem; 
             color: #70757a; margin: 0; font-weight: 500;
         }
 
-        /* 4. 갤러리 그리드 (한 행 최대 5개 + 가로 10% 추가 축소) */
+        /* 4. 갤러리 그리드 (5열 고정) */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 5열 고정 */
-            gap: 12px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
         }
 
         .card {
             background: white;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
             cursor: pointer;
             border: 2px solid transparent;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
         .card.selected { border-color: #4285F4; background-color: #F8FBFF; }
 
-        /* 이미지 가로 10% 추가 축소 비율 반영 */
         .card img { 
             width: 100%; 
-            height: 90px; /* 가로가 좁아진 만큼 높이도 낮춰 콤팩트하게 유지 */
+            height: 95px; 
             object-fit: cover; 
             display: block; 
             background: #f1f3f4;
         }
 
-        .card-info { padding: 10px 5px; text-align: center; background: white; border-top: 1px solid #f1f3f4; }
-        .card-info h3 { margin: 0; font-size: 0.75rem; font-weight: 600; color: #3c4043; line-height: 1.3; }
+        .card-info { padding: 12px 5px; text-align: center; background: white; border-top: 1px solid #f1f3f4; }
+        .card-info h3 { margin: 0; font-size: 0.78rem; font-weight: 600; color: #3c4043; line-height: 1.3; }
 
-        /* 복사 알림창 (Toast) */
+        /* 토스트 알림 */
         #toast {
             visibility: hidden; min-width: 250px; background-color: #323336; color: #fff;
             text-align: center; border-radius: 8px; padding: 14px;
-            position: fixed; z-index: 100; left: 50%; bottom: 50px; transform: translateX(-50%);
+            position: fixed; z-index: 100; left: 50%; bottom: 60px; transform: translateX(-50%);
             font-size: 0.9rem;
         }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
 
-        @keyframes fadein { from {bottom: 30px; opacity: 0;} to {bottom: 50px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 50px; opacity: 1;} to {bottom: 30px; opacity: 0;} }
+        @keyframes fadein { from {bottom: 30px; opacity: 0;} to {bottom: 60px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 60px; opacity: 1;} to {bottom: 30px; opacity: 0;} }
     </style>
 </head>
 <body>
@@ -99,7 +113,10 @@
 
 <div class="container">
     <div class="header-section">
-        <h1>LM 슬라이드, 인포그래픽 프롬프트 선택</h1>
+        <div class="title-wrapper">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/48/NotebookLM_logo.svg" alt="NotebookLM Logo" class="logo-img" onerror="this.src='https://www.gstatic.com/lamda/images/favicon_v2_16x16.png'">
+            <h1>LM 슬라이드, 인포그래픽 프롬프트 선택</h1>
+        </div>
         <p>(적용하려는 스타일카드를 선택하면, 프롬프트가 자동 복사됨)</p>
     </div>
     
@@ -114,34 +131,10 @@
         const gallery = document.getElementById('gallery');
         let lastSelected = null;
 
-        if (typeof designData !== 'undefined' && designData.length > 0) {
+        if (typeof designData !== 'undefined') {
             designData.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                // 이미지 경로를 ./파일명 형식으로 안전하게 로드
                 card.innerHTML = `
                     <img src="./${item.img}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/150x100/f1f3f4/999?text=Image'">
-                    <div class="card-info"><h3>${item.title}</h3></div>
-                `;
-                
-                card.onclick = () => {
-                    if (lastSelected) lastSelected.classList.remove('selected');
-                    card.classList.add('selected');
-                    lastSelected = card;
-
-                    // 클립보드 복사 실행
-                    navigator.clipboard.writeText(item.prompt).then(() => {
-                        const toast = document.getElementById("toast");
-                        toast.className = "show";
-                        setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-                    });
-                };
-                gallery.appendChild(card);
-            });
-        } else {
-            console.error("데이터를 찾을 수 없습니다. data.js 파일의 designData 변수를 확인해주세요.");
-        }
-    });
-</script>
-</body>
-</html>
+                    <div class="card-info"><h3>${
