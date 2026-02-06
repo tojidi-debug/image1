@@ -2,49 +2,48 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NotebookLM 디자인 프롬프트 갤러리</title>
+    <title>Prompt Selector</title>
     <style>
-        body { font-family: 'Pretendard', sans-serif; background-color: #f0f2f5; margin: 0; padding: 40px 20px; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; margin-bottom: 40px; font-size: 2rem; color: #1a1a1a; }
+        body { font-family: 'Pretendard', sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 1.4rem; margin-bottom: 20px; }
         
+        /* 6개가 한눈에 들어오게 그리드 조정 */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
         }
 
         .card {
             background: white;
-            border-radius: 16px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             cursor: pointer;
-            border: 1px solid #e1e4e8;
-            position: relative;
+            border: 2px solid transparent;
+            transition: 0.2s;
         }
 
-        .card:hover { transform: translateY(-10px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); }
-        .card.selected { border: 3px solid #007bff; background-color: #f0f7ff; }
+        .card:hover { transform: translateY(-3px); }
+        .card.selected { border-color: #007bff; background-color: #e7f1ff; }
 
-        .card img { width: 100%; height: 240px; object-fit: cover; display: block; }
+        /* 이미지 높이를 약 30% 수준으로 축소 */
+        .card img { width: 100%; height: 100px; object-fit: cover; display: block; background: #eee; }
 
-        .card-info { padding: 20px; text-align: center; }
-        .card-info h3 { margin: 0; font-size: 1.2rem; }
+        .card-info { padding: 8px; text-align: center; }
+        .card-info h3 { margin: 0; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* 복사 완료 토스트 알림 */
         #toast {
-            visibility: hidden; min-width: 280px; background-color: #333; color: #fff;
-            text-align: center; border-radius: 50px; padding: 16px;
-            position: fixed; z-index: 100; left: 50%; bottom: 40px; transform: translateX(-50%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            visibility: hidden; min-width: 180px; background-color: #333; color: #fff;
+            text-align: center; border-radius: 20px; padding: 10px;
+            position: fixed; z-index: 100; left: 50%; bottom: 20px; transform: translateX(-50%);
+            font-size: 0.8rem;
         }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
 
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 40px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 40px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 20px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 20px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
 <body>
@@ -54,44 +53,35 @@
     <div id="gallery" class="gallery"></div>
 </div>
 
-<div id="toast">✅ 프롬프트가 복사되었습니다!</div>
+<div id="toast">✅ 복사되었습니다!</div>
 
 <script src="data.js"></script>
 <script>
     const gallery = document.getElementById('gallery');
-    let lastSelectedCard = null;
+    let lastSelected = null;
 
     designData.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card';
+        // 중요: 이미지 경로를 item.img 그대로 사용 (Root에 있으므로)
         card.innerHTML = `
-            <img src="${item.img}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/320x240?text=이미지+확인+불가'">
-            <div class="card-info">
-                <h3>${item.title}</h3>
-            </div>
+            <img src="${item.img}" alt="${item.title}" loading="lazy">
+            <div class="card-info"><h3>${item.title}</h3></div>
         `;
         
         card.onclick = () => {
-            // 하나만 선택되는 시각적 효과
-            if (lastSelectedCard) lastSelectedCard.classList.remove('selected');
+            if (lastSelected) lastSelected.classList.remove('selected');
             card.classList.add('selected');
-            lastSelectedCard = card;
+            lastSelected = card;
 
-            // 프롬프트 복사
-            copyToClipboard(item.prompt);
+            navigator.clipboard.writeText(item.prompt).then(() => {
+                const toast = document.getElementById("toast");
+                toast.className = "show";
+                setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+            });
         };
-        
         gallery.appendChild(card);
     });
-
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            const toast = document.getElementById("toast");
-            toast.className = "show";
-            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-        });
-    }
 </script>
-
 </body>
 </html>
